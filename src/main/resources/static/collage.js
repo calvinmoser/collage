@@ -1,4 +1,4 @@
-// Iteration 33
+// Iteration 34
 'use strict';
 
 // ── Configuration ─────────────────────────────────────────────────────────────
@@ -635,109 +635,23 @@ function hideSpinner() {
 
 // ── Build ─────────────────────────────────────────────────────────────────────
 
-function makeCrop(src, imgEl, W, H, minAreaFrac, maxAreaFrac) {
-  const aspect  = rnd(CONFIG.minAspectRatio, 1.0);
-  const area    = W * H * rnd(minAreaFrac, maxAreaFrac);
-  const longer  = Math.sqrt(area / aspect);
-  const shorter = longer * aspect;
-  const landscape = Math.random() < 0.5;
-  const w = Math.min(landscape ? longer : shorter, IMG_W);
-  const h = Math.min(landscape ? shorter : longer, IMG_H);
-  const rot = rnd(-28, 28);
-  let cropX = 0, cropY = 0, bestScore = Infinity;
-  for (let tries = 0; tries < CONFIG.cropRetries; tries++) {
-    const cx = rnd(0, Math.max(0, IMG_W - w));
-    const cy = rnd(0, Math.max(0, IMG_H - h));
-    const score = cropBoringScore(imgEl, cx, cy, Math.ceil(w), Math.ceil(h));
-    if (score < bestScore) { bestScore = score; cropX = cx; cropY = cy; }
-    if (score <= CONFIG.boringThreshold) break;
-  }
-  if (bestScore > CONFIG.boringThreshold) return null;
-  return { src, w, h, rot, cropX, cropY, area: w * h };
-}
-
-let cachedImages = null;
-
 async function buildCollage() {
-  const container  = document.getElementById('collage');
+  const container = document.getElementById('collage');
   const W = window.innerWidth;
   const H = window.innerHeight;
 
-  // Show spinner immediately — opaque overlay hides everything below
   const spinnerSrc = SITE_IMAGES[Math.floor(Math.random() * SITE_IMAGES.length)].src;
   showSpinner(spinnerSrc);
   await new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
 
-  if (!cachedImages) {
-    // Preload site images in parallel with fragment discovery
-    const sitePreload = Promise.all(SITE_IMAGES.map(({ src }) => new Promise(r => {
+  const [bgBlob] = await Promise.all([
+    fetch(`/api/background?w=${W}&h=${H}`).then(r => r.blob()),
+    Promise.all(SITE_IMAGES.map(({ src }) => new Promise(r => {
       const img = new Image(); img.onload = img.onerror = r; img.src = src;
-    })));
-    cachedImages = await discoverImages();
-    await sitePreload;
-  }
-  if (cachedImages.length === 0) {
-    container.textContent = 'No fragment images found in ../images/';
-    hideSpinner();
-    return;
-  }
+    }))),
+  ]);
+  const bgUrl = URL.createObjectURL(bgBlob);
 
-  const shuffled    = shuffle(cachedImages).slice(0, CONFIG.maxImages);
-  const numBacking  = rndInt(4, 6);
-  const backingPool = shuffled.slice(0, numBacking);
-  const regularPool = shuffled.slice(numBacking);
-
-  // Backing scraps: one large crop per image, placed first (land at bottom of z-stack)
-  // Regular scraps: two crops per image for dense coverage
-  const scraps = [
-    ...backingPool.map(({ src, imgEl }) => makeCrop(src, imgEl, W, H, 0.12, 0.30)),
-    ...regularPool.flatMap(({ src, imgEl }) => [
-      makeCrop(src, imgEl, W, H, CONFIG.minScrapAreaFrac, CONFIG.maxScrapAreaFrac),
-      makeCrop(src, imgEl, W, H, CONFIG.minScrapAreaFrac, CONFIG.maxScrapAreaFrac),
-    ]),
-  ].filter(Boolean);
-
-  // Sort largest → smallest so big scraps land at the bottom (lower z-index)
-  scraps.sort((a, b) => b.area - a.area);
-
-  const lightAngle  = rnd(25, 65) * Math.PI / 180;
-  const baseDist    = rnd(4, 8);
-  const baseBlur    = rnd(5, 10);
-
-  // Build wrappers detached from the live DOM — yields below won't cause partial paints
-  const bgWrapper = document.createElement('div');
-  bgWrapper.style.cssText = `position:absolute;left:50%;transform:translateX(-50%);width:${W}px;height:100%;overflow:visible`;
-
-  const bgContainer = document.createElement('div');
-  bgContainer.style.cssText = 'position:absolute;inset:0;filter:saturate(0.45) brightness(0.70)';
-  bgWrapper.appendChild(bgContainer);
-
-  const placed = [];
-  for (let i = 0; i < scraps.length; i++) {
-    const { src, w, h, rot, cropX, cropY } = scraps[i];
-    const rippedEdges = chooseRippedEdges();
-    const { clipPath, fringePolygons } = generateClipPath(rippedEdges);
-
-    // Same-source scraps must not overlap each other at all
-    const forbidden = placed.filter(p => p.src === src);
-    const pos = bestPosition(w, h, rot, W, H, placed, forbidden);
-
-    // Shadow scales with z-rank: bottom scraps nearly flat, top scraps clearly lifted
-    const rank    = scraps.length > 1 ? i / (scraps.length - 1) : 0.5;
-    const dist    = baseDist * (0.3 + rank * 1.0);
-    const blur    = +(baseBlur * (0.4 + rank * 0.9)).toFixed(1);
-    const alpha   = (0.10 + rank * 0.45).toFixed(2);
-    const shadowX = +(Math.cos(lightAngle) * dist).toFixed(1);
-    const shadowY = +(Math.sin(lightAngle) * dist).toFixed(1);
-
-    placed.push({ cx: pos.cx, cy: pos.cy, w, h, rot, src });
-    renderScrap(bgContainer, src, pos.cx, pos.cy, w, h, rot, clipPath, fringePolygons, i + 1, shadowX, shadowY, blur, cropX, cropY, alpha);
-
-    // Yield every 8 scraps — safe since bgWrapper is detached, no partial paint
-    if (i > 0 && i % 8 === 0) await new Promise(r => setTimeout(r, 0));
-  }
-
-  // Site wrapper: fixed FG_W wide, CSS scale shrinks it below that breakpoint
   const fgScale = Math.min(1, W / FG_W);
   const siteWrapper = document.createElement('div');
   siteWrapper.id = 'fg-wrapper';
@@ -751,21 +665,20 @@ async function buildCollage() {
     `overflow:visible`,
   ].join(';');
 
-  // Build site layer into detached siteWrapper
   await buildSiteLayer(siteWrapper, FG_W, H);
 
-  // Reveal everything at once — single DOM swap so bg and site appear together
   container.innerHTML = '';
+  container.className = '';
   container.style.height = `${H}px`;
-  container.appendChild(bgWrapper);
+  container.style.backgroundImage = `url(${bgUrl})`;
+  container.style.backgroundSize = 'cover';
+  container.style.backgroundPosition = 'center';
   container.appendChild(siteWrapper);
 
-  // Wait for site images to finish loading (fragment images are already preloaded)
   const siteImgs = [...container.querySelectorAll('.site-scrap img')];
   await Promise.all(siteImgs.map(img =>
     img.complete ? Promise.resolve() : new Promise(r => { img.onload = img.onerror = r; })
   ));
-  // Two rAFs: first tick lets browser layout, second confirms paint
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   hideSpinner();
 }
