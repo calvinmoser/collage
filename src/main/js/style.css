@@ -1,0 +1,237 @@
+/* Iteration 33 */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+  font-family: system-ui, sans-serif;
+}
+
+/* ── Iter label ── */
+
+#iter-label {
+  position: fixed;
+  top: 8px;
+  right: 12px;
+  z-index: 9999;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  font-family: system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+/* ── Collage container ── */
+
+#collage {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  /* height and margin-top set by JS */
+}
+
+/* ── Scraps ── */
+
+.scrap {
+  position: absolute;
+  transform-origin: center center;
+  overflow: hidden;
+  /* clip-path, filter, z-index set per-element by JS */
+}
+
+.scrap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* object-fit and object-position set per-element by JS (no scaling — crop only) */
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ── Site scraps ── */
+
+.site-scrap {
+  position: absolute;
+  transform-origin: center center;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.site-scrap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ── Loading spinner ── */
+
+@keyframes scrap-spin {
+  to { transform: rotate(360deg); }
+}
+
+#loading-spinner {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: #111;
+  filter: drop-shadow(4px 5px 14px rgba(0,0,0,0.6));
+}
+
+.spinner-glow {
+  animation: scrap-spin 0.7s linear infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.spinner-scrap {
+  width: 72px;
+  height: 90px;
+  background: #f0ebe0;
+  overflow: hidden;
+  clip-path: polygon(
+    4% 6%, 14% 1%, 30% 5%, 48% 0%, 63% 4%, 80% 1%, 96% 3%,
+    99% 14%, 95% 30%, 100% 47%, 97% 63%, 100% 80%, 96% 95%,
+    82% 99%, 65% 96%, 50% 100%, 34% 97%, 18% 100%, 4% 97%,
+    1% 82%, 5% 65%, 0% 50%, 3% 33%, 0% 18%, 4% 6%
+  );
+}
+
+/* ── Backgrounds ── */
+
+/* Corkboard */
+.bg-corkboard {
+  background-color: #b8864e;
+  background-image:
+    radial-gradient(circle at 2px 2px,   rgba(0,0,0,0.14)   1.5px, transparent 0),
+    radial-gradient(circle at 10px 10px, rgba(255,255,255,0.06) 1px, transparent 0),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 5px,
+      rgba(0,0,0,0.025) 5px,
+      rgba(0,0,0,0.025) 6px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 5px,
+      rgba(0,0,0,0.018) 5px,
+      rgba(0,0,0,0.018) 6px
+    );
+  background-size: 14px 14px, 14px 14px, 100% 100%, 100% 100%;
+}
+
+/* Kraft Paper */
+.bg-kraft {
+  background-color: #c4955a;
+  background-image:
+    repeating-linear-gradient(
+      -47deg,
+      transparent 0,
+      transparent 4px,
+      rgba(0,0,0,0.022) 4px,
+      rgba(0,0,0,0.022) 5px
+    ),
+    repeating-linear-gradient(
+      43deg,
+      transparent 0,
+      transparent 4px,
+      rgba(0,0,0,0.014) 4px,
+      rgba(0,0,0,0.014) 5px
+    ),
+    radial-gradient(ellipse at 25% 35%, rgba(255,255,255,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 65%, rgba(0,0,0,0.08)      0%, transparent 55%);
+}
+
+/* White Posterboard */
+.bg-posterboard {
+  background-color: #f3f1ed;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 5px,
+      rgba(0,0,0,0.010) 5px,
+      rgba(0,0,0,0.010) 6px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 5px,
+      rgba(0,0,0,0.006) 5px,
+      rgba(0,0,0,0.006) 6px
+    ),
+    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.5) 0%, transparent 60%);
+}
+
+/* Notebook Paper */
+.bg-notebook {
+  background-color: #fefefe;
+  background-image:
+    /* Horizontal rule lines */
+    repeating-linear-gradient(
+      180deg,
+      transparent     0px,
+      transparent     23px,
+      #b3cfe8         23px,
+      #b3cfe8         24px
+    ),
+    /* Red margin line */
+    linear-gradient(
+      90deg,
+      transparent   0px,
+      transparent   63px,
+      #f0a0a0        63px,
+      #f0a0a0        65px,
+      transparent   65px
+    );
+  background-size: 100% 24px, 100% 100%;
+  /* Offset lines so first line appears below the controls bar */
+  background-position: 0 48px, 0 0;
+}
+
+/* Papyrus */
+.bg-papyrus {
+  background-color: #c9a96e;
+  background-image:
+    /* Horizontal reed strands — varying weight and spacing */
+    repeating-linear-gradient(
+      180deg,
+      transparent        0,
+      transparent        5px,
+      rgba(0,0,0,0.07)   5px,
+      rgba(0,0,0,0.07)   6px,
+      transparent        6px,
+      transparent       10px,
+      rgba(0,0,0,0.04)  10px,
+      rgba(0,0,0,0.04)  11px
+    ),
+    /* Vertical reed strands — sparser */
+    repeating-linear-gradient(
+      90deg,
+      transparent        0,
+      transparent        8px,
+      rgba(0,0,0,0.05)   8px,
+      rgba(0,0,0,0.05)   9px,
+      transparent        9px,
+      transparent       17px,
+      rgba(0,0,0,0.03)  17px,
+      rgba(0,0,0,0.03)  18px
+    ),
+    /* Warm highlight to break up uniformity */
+    radial-gradient(ellipse at 40% 30%, rgba(255,240,180,0.18) 0%, transparent 60%);
+}
