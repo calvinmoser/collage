@@ -20,6 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 public class CollageService {
 
+
     // ── Configuration ────────────────────────────────────────────────────────────
 
     private static final int    MAX_IMAGES         = 40;
@@ -34,9 +35,6 @@ public class CollageService {
     private static final double EDGE_OVERHANG       = 0.04;
     private static final double BORING_THRESHOLD    = 0.60;
     private static final int    CROP_RETRIES        = 10;
-
-    // Background base color — warm cork tone; scraps will cover most of it
-    private static final Color  BASE_COLOR          = new Color(0xb8, 0x86, 0x4e);
 
     @Autowired
     private FragmentLoader fragmentLoader;
@@ -321,14 +319,11 @@ public class CollageService {
     // ── Rendering ────────────────────────────────────────────────────────────────
 
     private BufferedImage render(List<Scrap> scraps, int W, int H) {
-        BufferedImage canvas = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+        BufferedImage canvas = new BufferedImage(W, H, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = canvas.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,   RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,  RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g.setRenderingHint(RenderingHints.KEY_RENDERING,      RenderingHints.VALUE_RENDER_QUALITY);
-
-        g.setColor(BASE_COLOR);
-        g.fillRect(0, 0, W, H);
 
         for (Scrap s : scraps) renderScrap(g, s);
 
@@ -424,26 +419,24 @@ public class CollageService {
 
     // ── Post-processing ──────────────────────────────────────────────────────────
 
-    // Replicates the JS: filter:saturate(0.45) brightness(0.70) on the bg container
     private void applyFilters(BufferedImage img) {
         int w = img.getWidth(), h = img.getHeight();
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
-                int rgb = img.getRGB(x, y);
-                int r = (rgb >> 16) & 0xFF;
-                int gv = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
+                int argb = img.getRGB(x, y);
+                int a = (argb >> 24) & 0xFF;
+                if (a == 0) continue;
+
+                int r  = (argb >> 16) & 0xFF;
+                int gv = (argb >>  8) & 0xFF;
+                int b  =  argb        & 0xFF;
 
                 int gray = (int) (0.299 * r + 0.587 * gv + 0.114 * b);
-                r  = clamp((int) (gray + 0.45 * (r  - gray)));
-                gv = clamp((int) (gray + 0.45 * (gv - gray)));
-                b  = clamp((int) (gray + 0.45 * (b  - gray)));
+                r  = clamp((int) ((gray + 0.45 * (r  - gray)) * 0.70));
+                gv = clamp((int) ((gray + 0.45 * (gv - gray)) * 0.70));
+                b  = clamp((int) ((gray + 0.45 * (b  - gray)) * 0.70));
 
-                r  = clamp((int) (r  * 0.70));
-                gv = clamp((int) (gv * 0.70));
-                b  = clamp((int) (b  * 0.70));
-
-                img.setRGB(x, y, (r << 16) | (gv << 8) | b);
+                img.setRGB(x, y, (a << 24) | (r << 16) | (gv << 8) | b);
             }
         }
     }

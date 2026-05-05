@@ -1,4 +1,4 @@
-// Iteration 34
+// Iteration 35
 'use strict';
 
 // ── Configuration ─────────────────────────────────────────────────────────────
@@ -668,11 +668,17 @@ async function buildCollage() {
   await buildSiteLayer(siteWrapper, FG_W, H);
 
   container.innerHTML = '';
-  container.className = '';
   container.style.height = `${H}px`;
-  container.style.backgroundImage = `url(${bgUrl})`;
-  container.style.backgroundSize = 'cover';
-  container.style.backgroundPosition = 'center';
+  // medium class (bg-corkboard etc.) stays on container; collage PNG overlays it
+  const bgOverlay = document.createElement('div');
+  bgOverlay.style.cssText = [
+    'position:absolute', 'inset:0',
+    `background-image:url(${bgUrl})`,
+    'background-size:cover',
+    'background-position:center',
+    'pointer-events:none',
+  ].join(';');
+  container.appendChild(bgOverlay);
   container.appendChild(siteWrapper);
 
   const siteImgs = [...container.querySelectorAll('.site-scrap img')];
