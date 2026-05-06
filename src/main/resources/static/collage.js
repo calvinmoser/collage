@@ -710,6 +710,23 @@ function applyFgScale() {
 
 document.addEventListener('DOMContentLoaded', () => {
   buildCollage();
+
+  const nav = document.createElement('a');
+  nav.id = 'nav-contact';
+  nav.href = '/contact';
+  nav.textContent = 'Contact →';
+  nav.style.cssText = [
+    'position:fixed', 'bottom:22px', 'right:28px', 'z-index:200',
+    "font-family:'IBM Plex Mono',monospace", 'font-size:0.72rem',
+    'font-weight:700', 'text-transform:uppercase', 'letter-spacing:0.15em',
+    'color:white', 'background:rgba(0,0,0,0.65)',
+    'padding:7px 14px', 'text-decoration:none',
+    'border-left:2px solid #ff9f1c',
+    'transition:background 0.12s',
+  ].join(';');
+  nav.addEventListener('mouseover', () => { nav.style.background = 'rgba(255,159,28,0.2)'; });
+  nav.addEventListener('mouseout',  () => { nav.style.background = 'rgba(0,0,0,0.65)'; });
+  document.body.appendChild(nav);
 });
 
 let _resizeTimer = null;
