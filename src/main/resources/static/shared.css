@@ -1,0 +1,35 @@
+:root {
+  --content-width: 1080px;
+  --color-orange:  #ff9f1c;
+  --color-gold:    #ffbe0b;
+  --color-cyan:    #00b4d8;
+  --panel-bg:      rgba(0, 0, 0, 0.65);
+}
+
+/* Full-viewport collage background */
+.bg {
+  position: fixed;
+  inset: 0;
+  background: url('/api/background') center center / cover no-repeat;
+  z-index: 0;
+}
+
+/* White radial glow over background — matches main page content panel */
+.bg-glow {
+  position: fixed;
+  top: 0; bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--content-width);
+  z-index: 1;
+  background: radial-gradient(ellipse 80% 75% at center,
+    rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+}
+
+/* Centered live content area */
+.live {
+  width: 100%;
+  max-width: var(--content-width);
+}

@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sit at the Table</title>
+<title>Techie Table — Tutoring</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=Permanent+Marker&family=Anton&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -14,18 +15,14 @@ body {
   font-family: 'IBM Plex Mono', monospace;
 }
 
-.bg {
-  position: fixed;
-  inset: 0;
-  background: url('https://techietable.com/api/background') center center / cover no-repeat;
-  z-index: 0;
-}
 
 .page {
   position: relative;
   z-index: 10;
   min-height: 100vh;
   padding: 0 0 140px;
+  max-width: var(--content-width);
+  margin: 0 auto;
 }
 
 /* ── HERO ── */
@@ -42,7 +39,7 @@ body {
   font-family: 'Anton', sans-serif;
   font-style: italic;
   font-size: clamp(4rem, 10.5vw, 8.5rem);
-  color: #FF6B00;
+  color: var(--color-orange);
   text-transform: uppercase;
   line-height: 1;
   transform: rotate(-1.5deg);
@@ -58,7 +55,7 @@ body {
   font-family: 'Anton', sans-serif;
   font-style: italic;
   font-size: clamp(1.6rem, 4vw, 3.2rem);
-  color: #FFD700;
+  color: var(--color-gold);
   text-transform: uppercase;
   transform: rotate(-1deg);
   filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.65));
@@ -92,7 +89,7 @@ body {
 .price-free {
   font-family: 'Permanent Marker', cursive;
   font-size: clamp(1.3rem, 2.8vw, 2rem);
-  color: #00FFB2;
+  color: var(--color-cyan);
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.75));
   white-space: nowrap;
 }
@@ -175,20 +172,20 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.07em;
   padding: 5px 13px;
-  border: 1.5px solid #FF6B00;
-  color: #FF6B00;
+  border: 1.5px solid var(--color-orange);
+  color: var(--color-orange);
   background: rgba(0,0,0,0.62);
   white-space: nowrap;
   cursor: default;
   transition: background 0.1s, color 0.1s;
 }
-.tag:hover { background: #FF6B00; color: white; }
+.tag:hover { background: var(--color-orange); color: white; }
 
 .tag.l {
-  border-color: #FFD700;
-  color: #FFD700;
+  border-color: var(--color-gold);
+  color: var(--color-gold);
 }
-.tag.l:hover { background: #FFD700; color: #111; }
+.tag.l:hover { background: var(--color-gold); color: #111; }
 
 /* ── PERK TAGS ── */
 .perks {
@@ -247,7 +244,7 @@ body {
   letter-spacing: 0.02em;
 }
 
-.cta-text span { color: #FF6B00; }
+.cta-text span { color: var(--color-orange); }
 
 .btn {
   font-family: 'IBM Plex Mono', monospace;
@@ -256,7 +253,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.15em;
   padding: 13px 30px;
-  background: #FF6B00;
+  background: var(--color-orange);
   color: white;
   border: none;
   cursor: pointer;
@@ -273,16 +270,16 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #00FFB2;
+  color: var(--color-cyan);
   background: rgba(0,0,0,0.6);
   padding: 7px 14px;
   text-decoration: none;
-  border-left: 2px solid #00FFB2;
+  border-left: 2px solid var(--color-cyan);
   transition: background 0.12s, color 0.12s;
   margin-top: 6px;
 }
 .contact-link:hover {
-  background: rgba(0,255,178,0.15);
+  background: rgba(0,180,216,0.15);
 }
 
 .qr-block {
@@ -308,7 +305,7 @@ body {
 }
 .qr-label span {
   display: block;
-  color: #00FFB2;
+  color: var(--color-cyan);
   font-size: 0.85rem;
   margin-bottom: 3px;
 }
@@ -317,6 +314,7 @@ body {
 <body>
 
 <div class="bg"></div>
+<div class="bg-glow"></div>
 
 <div class="page">
 
@@ -390,7 +388,7 @@ body {
           Scan to reach out<br>and book your<br>free first hour
         </div>
       </div>
-      <a href="https://techietable.com/contact" class="contact-link">
+      <a href="/contact" class="contact-link">
         Prefer email or want your own @handle:techietable.com? →
       </a>
     </div>
