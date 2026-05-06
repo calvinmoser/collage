@@ -1,7 +1,7 @@
 services:
   collage:
     build: .
+    container_name: collage-home
     ports:
-      - "80:8080"
-      - "443:8080"   # TLS termination expected upstream (Cloudflare, nginx, etc.)
+      - "55555:8080"
     restart: unless-stopped
