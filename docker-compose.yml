@@ -1,0 +1,7 @@
+services:
+  collage:
+    build: .
+    ports:
+      - "80:8080"
+      - "443:8080"   # TLS termination expected upstream (Cloudflare, nginx, etc.)
+    restart: unless-stopped
