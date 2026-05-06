@@ -1,4 +1,4 @@
-// Iteration 35
+// Iteration 36
 'use strict';
 
 // ── Configuration ─────────────────────────────────────────────────────────────
@@ -652,20 +652,22 @@ async function buildCollage() {
   ]);
   const bgUrl = URL.createObjectURL(bgBlob);
 
-  const fgScale = Math.min(1, W / FG_W);
+  const effectiveFgW = Math.min(FG_W, W);
+  const fgScale = Math.min(1, W / effectiveFgW);
   const siteWrapper = document.createElement('div');
   siteWrapper.id = 'fg-wrapper';
+  siteWrapper.dataset.designWidth = String(effectiveFgW);
   siteWrapper.style.cssText = [
     `position:absolute`,
     `left:50%`,
     `transform-origin:top center`,
     `transform:translateX(-50%) scale(${fgScale})`,
-    `width:${FG_W}px`,
+    `width:${effectiveFgW}px`,
     `height:100%`,
     `overflow:visible`,
   ].join(';');
 
-  await buildSiteLayer(siteWrapper, FG_W, H);
+  await buildSiteLayer(siteWrapper, effectiveFgW, H);
 
   container.innerHTML = '';
   container.style.height = `${H}px`;
@@ -694,7 +696,8 @@ async function buildCollage() {
 function applyFgScale() {
   const wrapper = document.getElementById('fg-wrapper');
   if (!wrapper) return;
-  const s = Math.min(1, window.innerWidth / FG_W);
+  const designW = parseInt(wrapper.dataset.designWidth || FG_W, 10);
+  const s = Math.min(1, window.innerWidth / designW);
   wrapper.style.transform = `translateX(-50%) scale(${s})`;
 }
 
