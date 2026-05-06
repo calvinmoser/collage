@@ -502,9 +502,16 @@ async function buildSiteLayer(container, W, H) {
   // Each image gets an equal share of the content area; target 60–72% of that share
   const slotArea = (W * H) / N;
 
-  // Grid: soft gravitational pull toward cell centers
-  const cols = Math.ceil(Math.sqrt(N));
-  const rows = Math.ceil(N / cols);
+  // Pick the cols×rows factoring of N whose cell aspect ratio is closest to square
+  const { cols, rows } = (() => {
+    let best = { cols: 1, rows: N, score: Infinity };
+    for (let c = 1; c <= N; c++) {
+      const r = Math.ceil(N / c);
+      const score = Math.abs(Math.log((W / c) / (H / r)));
+      if (score < best.score) best = { cols: c, rows: r, score };
+    }
+    return best;
+  })();
   const cellW = W / cols;
   const cellH = H / rows;
 
@@ -705,5 +712,17 @@ document.addEventListener('DOMContentLoaded', () => {
   buildCollage();
 });
 
-window.addEventListener('resize', applyFgScale);
+let _resizeTimer = null;
+window.addEventListener('resize', () => {
+  const wrapper = document.getElementById('fg-wrapper');
+  if (!wrapper) { applyFgScale(); return; }
+  const designW = parseInt(wrapper.dataset.designWidth || FG_W, 10);
+  if (Math.abs(window.innerWidth - designW) > designW * 0.15) {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(buildCollage, 200);
+  } else {
+    applyFgScale();
+  }
+});
+
 
