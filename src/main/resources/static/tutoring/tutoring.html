@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sit at the Table</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=Permanent+Marker&family=Anton&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  background: url('https://techietable.com/api/background') center center / cover no-repeat;
+  z-index: 0;
+}
+
+.page {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  padding: 0 0 140px;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  height: 320px;
+  overflow: visible;
+}
+
+.label-main {
+  position: absolute;
+  top: 32px;
+  left: 5vw;
+  font-family: 'Anton', sans-serif;
+  font-style: italic;
+  font-size: clamp(4rem, 10.5vw, 8.5rem);
+  color: #FF6B00;
+  text-transform: uppercase;
+  line-height: 1;
+  transform: rotate(-1.5deg);
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.6));
+  -webkit-text-stroke: 1px rgba(0,0,0,0.3);
+  letter-spacing: 0.02em;
+}
+
+.label-sub {
+  position: absolute;
+  top: 160px;
+  left: 8vw;
+  font-family: 'Anton', sans-serif;
+  font-style: italic;
+  font-size: clamp(1.6rem, 4vw, 3.2rem);
+  color: #FFD700;
+  text-transform: uppercase;
+  transform: rotate(-1deg);
+  filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.65));
+  -webkit-text-stroke: 1px rgba(0,0,0,0.4);
+  letter-spacing: 0.04em;
+}
+
+.label-mono {
+  position: absolute;
+  top: 240px;
+  left: 6vw;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(0.6rem, 1.3vw, 0.82rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: white;
+  background: rgba(0,0,0,0.65);
+  padding: 6px 16px;
+}
+
+/* ── PRICE — floated upper right ── */
+.price-float {
+  position: absolute;
+  top: 28px;
+  right: 6vw;
+  transform: rotate(3deg);
+  text-align: right;
+}
+
+.price-free {
+  font-family: 'Permanent Marker', cursive;
+  font-size: clamp(1.3rem, 2.8vw, 2rem);
+  color: #00FFB2;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.75));
+  white-space: nowrap;
+}
+
+.price-num {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  color: white;
+  line-height: 1;
+  filter: drop-shadow(3px 3px 0 rgba(0,0,0,0.65));
+  white-space: nowrap;
+}
+
+.price-num sup {
+  font-size: 0.45em;
+  vertical-align: top;
+  margin-top: 0.18em;
+  display: inline-block;
+  opacity: 0.75;
+}
+
+.price-note {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.85);
+  background: rgba(0,0,0,0.55);
+  padding: 4px 10px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* ── SECTION HEADERS ── */
+.sec-head {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  color: #fff;
+  background: rgba(107, 47, 217, 0.88);
+  display: inline-block;
+  padding: 2px 22px 2px 14px;
+  letter-spacing: 0.06em;
+  clip-path: polygon(0 0, 100% 0, 96% 100%, 0 100%);
+  margin-bottom: 1rem;
+}
+
+.sec-head.green {
+  background: rgba(0, 160, 100, 0.88);
+  clip-path: polygon(4% 0, 100% 0, 100% 100%, 0 100%);
+  padding: 2px 14px 2px 22px;
+}
+
+/* ── BODY TEXT ── */
+.body-text {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+  line-height: 1.85;
+  color: white;
+  background: rgba(0,0,0,0.6);
+  padding: 12px 18px;
+  display: inline;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  letter-spacing: 0.025em;
+}
+
+/* ── TAGS ── */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-top: 0.3rem;
+}
+
+.tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(0.68rem, 1.3vw, 0.82rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 5px 13px;
+  border: 1.5px solid #FF6B00;
+  color: #FF6B00;
+  background: rgba(0,0,0,0.62);
+  white-space: nowrap;
+  cursor: default;
+  transition: background 0.1s, color 0.1s;
+}
+.tag:hover { background: #FF6B00; color: white; }
+
+.tag.l {
+  border-color: #FFD700;
+  color: #FFD700;
+}
+.tag.l:hover { background: #FFD700; color: #111; }
+
+/* ── PERK TAGS ── */
+.perks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 0.8rem;
+  justify-content: flex-end;
+}
+.perk {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 4px 11px;
+  background: rgba(0,160,100,0.72);
+  color: white;
+  border: 1px solid rgba(0,255,160,0.45);
+}
+
+/* ── LAYOUT SECTIONS ── */
+.s-left {
+  padding: 2.5rem 5vw 0.5rem;
+  max-width: 680px;
+}
+
+.s-right {
+  padding: 2.5rem 5vw 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  max-width: 100%;
+}
+
+.s-right > * {
+  max-width: 640px;
+}
+
+/* ── CTA ── */
+.cta {
+  padding: 3.5rem 5vw 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.cta-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  color: white;
+  line-height: 0.95;
+  filter: drop-shadow(3px 3px 0 rgba(0,0,0,0.6));
+  letter-spacing: 0.02em;
+}
+
+.cta-text span { color: #FF6B00; }
+
+.btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 13px 30px;
+  background: #FF6B00;
+  color: white;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.45);
+  transition: background 0.1s, transform 0.1s;
+  margin-bottom: 6px;
+}
+.contact-link {
+  display: block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #00FFB2;
+  background: rgba(0,0,0,0.6);
+  padding: 7px 14px;
+  text-decoration: none;
+  border-left: 2px solid #00FFB2;
+  transition: background 0.12s, color 0.12s;
+  margin-top: 6px;
+}
+.contact-link:hover {
+  background: rgba(0,255,178,0.15);
+}
+
+.qr-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0,0,0,0.65);
+  padding: 14px 18px;
+  margin-bottom: 6px;
+}
+.qr-block canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+.qr-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: white;
+  line-height: 1.6;
+}
+.qr-label span {
+  display: block;
+  color: #00FFB2;
+  font-size: 0.85rem;
+  margin-bottom: 3px;
+}
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="label-main">Sit at the Table</div>
+    <div class="label-sub">Advanced CS Tutoring</div>
+    <div class="label-mono">One-on-one &nbsp;·&nbsp; All levels: undergrad → post-grad &nbsp;·&nbsp; Real frameworks</div>
+
+    <div class="price-float">
+      <div class="price-free">First hour free</div>
+      <div class="price-num">$15<sup>/hr</sup></div>
+      <div class="price-note">after that</div>
+    </div>
+  </div>
+
+  <!-- SPECIALTIES -->
+  <div class="s-left">
+    <div class="sec-head">Specialties</div>
+    <div class="tags">
+      <span class="tag">Spring Boot</span>
+      <span class="tag">Docker</span>
+      <span class="tag">Ansible</span>
+      <span class="tag">Angular</span>
+      <span class="tag">Blazor</span>
+      <span class="tag">Blazor MAUI</span>
+      <span class="tag l">Java</span>
+      <span class="tag l">.NET / C#</span>
+      <span class="tag l">TypeScript</span>
+      <span class="tag l">JavaScript</span>
+    </div>
+  </div>
+
+  <!-- TUTORING -->
+  <div class="s-left" style="padding-top:2.5rem;">
+    <div class="sec-head">The Tutoring</div>
+    <p class="body-text">
+      Live walkthroughs of your actual coursework. Real debugging, not textbook
+      examples. Architecture discussions, code review, interview prep —
+      built around what you're working on right now. Flexible scheduling
+      around classes and finals. Zoom, Meet, or Discord screen share.
+    </p>
+  </div>
+
+  <!-- REAL WORLD — right side -->
+  <div class="s-right" style="padding-top:2.8rem; margin-left:auto;">
+    <div class="sec-head green">Real-World Experience</div>
+    <p class="body-text">
+      For motivated students: a chance to contribute to actual production
+      app development. Think summer internship energy — on your own schedule.
+      Real features, real pull requests, real portfolio history on GitHub.
+      Not a class project. The actual thing.
+    </p>
+    <div class="perks">
+      <span class="perk">Production Codebase</span>
+      <span class="perk">GitHub History</span>
+      <span class="perk">Code Reviews</span>
+      <span class="perk">Agile Workflow</span>
+      <span class="perk">Portfolio Projects</span>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-text">Sit at<br><span>the table.</span></div>
+    <div>
+      <div class="qr-block">
+        <canvas id="qr" width="96" height="96"></canvas>
+        <div class="qr-label">
+          <span>Message on Matrix</span>
+          Scan to reach out<br>and book your<br>free first hour
+        </div>
+      </div>
+      <a href="https://techietable.com/contact" class="contact-link">
+        Prefer email or want your own @handle:techietable.com? →
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  var matrixLink = 'https://matrix.to/#/@placeholder:matrix.org';
+  new QRCode(document.getElementById('qr'), {
+    text: matrixLink,
+    width: 96,
+    height: 96,
+    colorDark: '#ffffff',
+    colorLight: '#000000',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+</script>
+</body>
+</html>

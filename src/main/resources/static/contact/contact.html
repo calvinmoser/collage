@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — TechieTable</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=Anton&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  background: url('https://techietable.com/api/background') center center / cover no-repeat;
+  z-index: 0;
+}
+
+.page {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px 100px;
+}
+
+/* ── LIVE AREA ── */
+.live {
+  width: 100%;
+  max-width: 1024px;
+}
+
+/* ── PAGE TITLE ── */
+.page-title {
+  font-family: 'Anton', sans-serif;
+  font-style: italic;
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  color: #FF6B00;
+  text-transform: uppercase;
+  line-height: 1;
+  transform: rotate(-1deg);
+  display: inline-block;
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.6));
+  -webkit-text-stroke: 1px rgba(0,0,0,0.3);
+  margin-bottom: 0.2rem;
+}
+
+.page-sub {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+  color: #FFD700;
+  letter-spacing: 0.08em;
+  filter: drop-shadow(1px 2px 0 rgba(0,0,0,0.7));
+  margin-bottom: 1.6rem;
+  display: block;
+}
+
+/* ── MATRIX HINT ROW ── */
+.matrix-hint-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.qr-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,0,0,0.65);
+  padding: 14px;
+  border-left: 2px solid #00FFB2;
+  flex-shrink: 0;
+}
+
+.qr-caption {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #00FFB2;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.matrix-hint {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(0.7rem, 1.4vw, 0.82rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: white;
+  background: rgba(0,0,0,0.62);
+  padding: 14px 18px;
+  line-height: 1.8;
+  border-left: 2px solid #FF6B00;
+  flex: 1;
+  min-width: 220px;
+}
+
+.matrix-hint a {
+  color: #00FFB2;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0,255,178,0.4);
+  transition: border-color 0.1s;
+}
+.matrix-hint a:hover { border-color: #00FFB2; }
+
+.matrix-hint span {
+  color: #00FFB2;
+}
+
+/* ── FORM PANEL ── */
+.form-panel {
+  background: rgba(0,0,0,0.68);
+  border-left: 3px solid #FF6B00;
+  padding: 2.2rem 2.5rem 2.5rem;
+  width: 100%;
+  max-width: 620px;
+}
+
+.form-panel-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  color: #FF6B00;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-panel-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,107,0,0.3);
+}
+
+/* ── FIELD ── */
+.field {
+  margin-bottom: 1.4rem;
+}
+
+.field label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 6px;
+}
+
+.field label .req {
+  color: #FF6B00;
+  margin-left: 3px;
+}
+
+.field input[type="text"],
+.field input[type="email"] {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-bottom: 2px solid rgba(255,107,0,0.5);
+  color: white;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+  -webkit-appearance: none;
+}
+
+.field input[type="text"]:focus,
+.field input[type="email"]:focus {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.25);
+  border-bottom-color: #FF6B00;
+}
+
+.field input[type="text"]::placeholder,
+.field input[type="email"]::placeholder {
+  color: rgba(255,255,255,0.2);
+  font-style: italic;
+}
+
+/* ── CHECKBOX ROW ── */
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 1.4rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.check-row input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.06);
+  cursor: pointer;
+  margin-top: 1px;
+  position: relative;
+  transition: border-color 0.12s, background 0.12s;
+  outline: none;
+}
+
+.check-row input[type="checkbox"]:focus {
+  border-color: #FF6B00;
+}
+
+.check-row input[type="checkbox"]:checked {
+  background: #FF6B00;
+  border-color: #FF6B00;
+}
+
+.check-row input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 7px;
+  height: 11px;
+  border: 2px solid white;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+.check-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: white;
+  line-height: 1.5;
+  padding-top: 1px;
+}
+
+.check-label span {
+  color: #00FFB2;
+}
+
+/* ── HANDLE FIELD — shown when checkbox checked ── */
+.handle-field {
+  margin-bottom: 1.4rem;
+  display: none;
+  animation: slideIn 0.18s ease;
+}
+
+.handle-field.visible { display: block; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.handle-wrap {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-bottom: 2px solid rgba(0,255,178,0.6);
+}
+
+.handle-prefix {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #00FFB2;
+  background: rgba(0,255,178,0.1);
+  padding: 10px 12px;
+  border-right: 1px solid rgba(255,255,255,0.12);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.handle-suffix {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: rgba(0,255,178,0.6);
+  background: rgba(0,255,178,0.06);
+  padding: 10px 12px;
+  border-left: 1px solid rgba(255,255,255,0.12);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.handle-wrap input[type="text"] {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  color: white;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  outline: none;
+  width: 0;
+  transition: background 0.15s;
+}
+
+.handle-wrap input[type="text"]:focus {
+  background: rgba(255,255,255,0.1);
+}
+
+.handle-wrap input[type="text"]::placeholder {
+  color: rgba(255,255,255,0.2);
+  font-style: italic;
+}
+
+/* ── SUBMIT ── */
+.submit-row {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-submit {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.12em;
+  color: white;
+  background: #FF6B00;
+  border: none;
+  padding: 10px 36px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.45);
+  transition: background 0.1s, transform 0.1s;
+  clip-path: polygon(0 0, 100% 0, 96% 100%, 0 100%);
+}
+.btn-submit:hover { background: #e05a00; transform: translateY(-2px); }
+.btn-submit:focus { outline: 2px solid #FF6B00; outline-offset: 3px; }
+
+.submit-note {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<div class="page">
+  <div class="live">
+
+    <div class="page-title">Get in Touch</div>
+    <span class="page-sub">TechieTable · CS Tutoring</span>
+
+    <div class="matrix-hint-row">
+      <div class="qr-wrap">
+        <div id="qr-contact"></div>
+        <div class="qr-caption">Scan to message<br>on Matrix</div>
+      </div>
+      <div class="matrix-hint">
+        Have a Matrix account? Scan the code to message directly —
+        any Matrix handle works, including one from
+        <a href="https://matrix.org" target="_blank" rel="noopener">matrix.org</a>.<br><br>
+        No Matrix account? Fill out the form below. We'll reach out by email,
+        or we can create a <span>@handle:techietable.com</span> account for you.
+      </div>
+    </div>
+
+    <div class="form-panel">
+      <div class="form-panel-title">Contact Request</div>
+
+      <div class="field">
+        <label for="name">Name <span class="req">*</span></label>
+        <input type="text" id="name" name="name" placeholder="Your name" required autocomplete="name" tabindex="1">
+      </div>
+
+      <div class="field">
+        <label for="email">Email Address <span class="req">*</span></label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" tabindex="2">
+      </div>
+
+      <div class="check-row" onclick="toggleHandle()">
+        <input type="checkbox" id="want-handle" name="want_handle" tabindex="3" onchange="toggleHandle()">
+        <div class="check-label">
+          Create a <span>@handle:techietable.com</span> Matrix account for me
+        </div>
+      </div>
+
+      <div class="handle-field" id="handle-field">
+        <label for="handle" style="display:block; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.18em; color:rgba(255,255,255,0.6); margin-bottom:6px;">
+          Preferred Handle <span class="req">*</span>
+        </label>
+        <div class="handle-wrap">
+          <span class="handle-prefix">@</span>
+          <input type="text" id="handle" name="handle" placeholder="yourhandle" tabindex="4"
+            pattern="[a-z0-9._\-]+" title="Lowercase letters, numbers, dots, dashes, underscores only">
+          <span class="handle-suffix">:techietable.com</span>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button type="button" class="btn-submit" tabindex="5" onclick="handleSubmit()">Send It</button>
+        <div class="submit-note">
+          We'll reach out via email.<br>
+          Matrix handle requests reviewed manually.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+new QRCode(document.getElementById('qr-contact'), {
+  text: 'https://matrix.to/#/@placeholder:matrix.org',
+  width: 96,
+  height: 96,
+  colorDark: '#ffffff',
+  colorLight: '#000000',
+  correctLevel: QRCode.CorrectLevel.M
+});
+</script>
+
+  var cb = document.getElementById('want-handle');
+  var field = document.getElementById('handle-field');
+  var input = document.getElementById('handle');
+  if (cb.checked) {
+    field.classList.add('visible');
+    input.required = true;
+    setTimeout(function(){ input.focus(); }, 50);
+  } else {
+    field.classList.remove('visible');
+    input.required = false;
+    input.value = '';
+  }
+}
+
+function handleSubmit() {
+  var name    = document.getElementById('name');
+  var email   = document.getElementById('email');
+  var cb      = document.getElementById('want-handle');
+  var handle  = document.getElementById('handle');
+
+  if (!name.value.trim())  { name.focus();  return; }
+  if (!email.value.trim()) { email.focus(); return; }
+  if (cb.checked && !handle.value.trim()) { handle.focus(); return; }
+
+  // TODO: wire to backend submission endpoint
+  alert('Submitted! (wire me to your backend)');
+}
+
+// Tab from checkbox into handle field when checked
+document.getElementById('want-handle').addEventListener('keydown', function(e) {
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    this.checked = !this.checked;
+    toggleHandle();
+  }
+});
+</script>
+</body>
+</html>
