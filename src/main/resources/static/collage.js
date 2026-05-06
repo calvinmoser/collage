@@ -340,7 +340,7 @@ function renderLabel(container, label, cx, cy, w, h, rot, zIndex, fixedColor) {
     `cursor:pointer`,
   ].join(';');
 
-  const minFontPx = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.6;
+  const minFontPx = Math.max(12, Math.min(w, h) * 0.05);
   const fontSize = Math.max(minFontPx, Math.round(Math.min(lw / label.length * 1.1, lh * 0.85)));
   const font  = LABEL_FONTS[Math.floor(Math.random() * LABEL_FONTS.length)];
   const color = fixedColor || LABEL_COLORS[Math.floor(Math.random() * LABEL_COLORS.length)];
