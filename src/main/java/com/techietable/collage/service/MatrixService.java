@@ -8,8 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 
@@ -38,10 +36,9 @@ public class MatrixService {
         }
         String body = buildMessage(req);
         String txnId = UUID.randomUUID().toString().replace("-", "");
-        String encodedRoom = URLEncoder.encode(roomId, StandardCharsets.UTF_8);
 
         restClient.put()
-            .uri(homeserverUrl + "/_matrix/client/v3/rooms/" + encodedRoom + "/send/m.room.message/" + txnId)
+            .uri(homeserverUrl + "/_matrix/client/v3/rooms/{roomId}/send/m.room.message/{txnId}", roomId, txnId)
             .header("Authorization", "Bearer " + accessToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(Map.of("msgtype", "m.text", "body", body))
