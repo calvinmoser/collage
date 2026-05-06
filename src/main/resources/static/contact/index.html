@@ -447,18 +447,43 @@ function toggleHandle() {
   }
 }
 
-function handleSubmit() {
+async function handleSubmit() {
   var name    = document.getElementById('name');
   var email   = document.getElementById('email');
   var cb      = document.getElementById('want-handle');
   var handle  = document.getElementById('handle');
+  var btn     = document.querySelector('.btn-submit');
 
   if (!name.value.trim())  { name.focus();  return; }
   if (!email.value.trim()) { email.focus(); return; }
   if (cb.checked && !handle.value.trim()) { handle.focus(); return; }
 
-  // TODO: wire to backend submission endpoint
-  alert('Submitted! (wire me to your backend)');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name:       name.value.trim(),
+        email:      email.value.trim(),
+        wantHandle: cb.checked,
+        handle:     handle.value.trim()
+      })
+    });
+    if (res.ok) {
+      btn.textContent = 'Sent!';
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Send It';
+      alert('Something went wrong — please try again.');
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = 'Send It';
+    alert('Something went wrong — please try again.');
+  }
 }
 
 // Tab from checkbox into handle field when checked

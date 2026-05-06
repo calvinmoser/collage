@@ -5,3 +5,7 @@ services:
     ports:
       - "55555:8080"
     restart: unless-stopped
+    environment:
+      - MATRIX_HOMESERVER_URL=${MATRIX_HOMESERVER_URL:-https://matrix.techietable.com}
+      - MATRIX_ACCESS_TOKEN=${MATRIX_ACCESS_TOKEN}
+      - MATRIX_ROOM_ID=${MATRIX_ROOM_ID}
