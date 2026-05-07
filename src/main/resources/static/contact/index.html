@@ -81,6 +81,22 @@ body {
   text-align: center;
   line-height: 1.5;
 }
+a.qr-link { display: block; }
+a.qr-link:hover { opacity: 0.82; }
+.qr-matrix-link {
+  display: inline-block;
+  margin-top: 6px;
+  color: var(--color-cyan);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0,180,216,0.4);
+  transition: border-color 0.1s;
+  text-transform: none;
+}
+.qr-matrix-link:hover { border-color: var(--color-cyan); }
 
 .matrix-hint {
   font-family: 'IBM Plex Mono', monospace;
@@ -385,8 +401,12 @@ body {
 
     <div class="matrix-hint-row">
       <div class="qr-wrap">
-        <div id="qr-contact"></div>
-        <div class="qr-caption">Scan to message<br>on Matrix</div>
+        <a href="https://matrix.to/#/@calvin:techietable.com" target="_blank" rel="noopener" class="qr-link">
+          <div id="qr-contact"></div>
+        </a>
+        <div class="qr-caption">Scan or tap<br>to message on Matrix<br>
+          <a href="https://matrix.to/#/@calvin:techietable.com" target="_blank" rel="noopener" class="qr-matrix-link">@calvin:techietable.com →</a>
+        </div>
       </div>
       <div class="matrix-hint">
         Have a Matrix account? Scan the code to message directly —

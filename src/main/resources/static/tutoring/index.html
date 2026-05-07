@@ -323,6 +323,21 @@ body {
   font-size: 0.85rem;
   margin-bottom: 3px;
 }
+a.qr-link { display: block; }
+a.qr-link:hover { opacity: 0.82; }
+.qr-matrix-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--color-cyan);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0,180,216,0.4);
+  transition: border-color 0.1s;
+}
+.qr-matrix-link:hover { border-color: var(--color-cyan); }
 </style>
 </head>
 <body>
@@ -409,10 +424,13 @@ body {
     <div class="cta-text">Sit at<br><span>the table.</span></div>
     <div>
       <div class="qr-block">
-        <div id="qr"></div>
+        <a href="https://matrix.to/#/@calvin:techietable.com" target="_blank" rel="noopener" class="qr-link">
+          <div id="qr"></div>
+        </a>
         <div class="qr-label">
           <span>Message on Matrix</span>
-          Scan to reach out<br>and book your<br>free first hour
+          Scan or click to reach out<br>and book your<br>free first hour
+          <a href="https://matrix.to/#/@calvin:techietable.com" target="_blank" rel="noopener" class="qr-matrix-link">@calvin:techietable.com →</a>
         </div>
       </div>
       <a href="/contact" class="contact-link">
