@@ -24,7 +24,7 @@
   max-width: var(--content-width);
   z-index: 1;
   background: radial-gradient(ellipse 80% 75% at center,
-    rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 100%);
+    rgba(0,0,0,0.45) 0%, rgba(0,0,0,0) 100%);
   pointer-events: none;
 }
 
