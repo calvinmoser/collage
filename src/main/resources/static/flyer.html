@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TechieTable Tutoring Flyer</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.flyer {
+  background: #f5f0e4;
+  width: 8.5in;
+  min-height: 11in;
+  padding: 0.7in 0.75in 0.65in;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TAPE ── */
+.tape {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1deg);
+  width: 90px;
+  height: 26px;
+  background: rgba(255,220,80,0.6);
+  border: 1px solid rgba(180,140,20,0.3);
+}
+
+/* ── TOP BAR ── */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 3px solid #1a1a1a;
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+}
+
+.site-url {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #1a1a1a;
+}
+
+.site-url span { color: #ff9f1c; }
+
+.top-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #888;
+}
+
+/* ── HEADLINE ── */
+.headline {
+  font-family: 'Anton', sans-serif;
+  font-style: italic;
+  font-size: 108pt;
+  color: #ff9f1c;
+  text-transform: uppercase;
+  line-height: 0.88;
+  letter-spacing: 0.01em;
+  margin-bottom: 10px;
+  text-shadow: 3px 4px 0 rgba(0,0,0,0.12);
+}
+
+.headline-sub {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32pt;
+  color: #1a1a1a;
+  letter-spacing: 0.07em;
+  margin-bottom: 22px;
+}
+
+/* ── FREE BADGE ── */
+.free-strip {
+  background: #1a1a1a;
+  color: #f5f0e4;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28pt;
+  letter-spacing: 0.1em;
+  padding: 8px 20px;
+  display: inline-block;
+  margin-bottom: 26px;
+  clip-path: polygon(0 0, 100% 0, 97% 100%, 0 100%);
+}
+
+.free-strip span { color: #ff9f1c; }
+
+.rates-note {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #888;
+  margin: 8px 0 22px;
+}
+
+/* ── DIVIDER ── */
+.rule { height: 2px; background: #1a1a1a; margin: 0 0 20px; }
+
+/* ── BULLETS ── */
+.bullets {
+  list-style: none;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.bullets li {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #1a1a1a;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.bullets li .dot {
+  color: #ff9f1c;
+  font-size: 14pt;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ── TECH ROW ── */
+.tech-row {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #555;
+  line-height: 2;
+  margin-bottom: 28px;
+}
+
+.tech-row span {
+  color: #ff9f1c;
+  margin: 0 3px;
+  white-space: nowrap;
+}
+
+/* ── QR ROW ── */
+.qr-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 22px;
+  flex-shrink: 0;
+}
+
+.qr-block {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.12);
+  padding: 14px 18px;
+  flex: 1;
+}
+
+.qr-block > div:first-child {
+  flex-shrink: 0;
+}
+
+.qr-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qr-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16pt;
+  letter-spacing: 0.08em;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.qr-handle {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #ff9f1c;
+}
+
+.qr-note {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #888;
+  line-height: 1.5;
+}
+
+/* ── TAGLINE ── */
+.tagline {
+  margin-top: auto;
+  border-top: 3px solid #1a1a1a;
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.tagline-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36pt;
+  letter-spacing: 0.08em;
+  color: #1a1a1a;
+}
+
+.tagline-text em {
+  color: #ff9f1c;
+  font-style: normal;
+}
+
+.tagline-url {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #888;
+}
+
+/* ── PRINT ── */
+@media print {
+  html, body {
+    background: none;
+    padding: 0;
+    display: block;
+  }
+  .flyer {
+    width: 100%;
+    min-height: 100vh;
+    box-shadow: none;
+    padding: 0.65in 0.7in 0.6in;
+  }
+  .tape { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="flyer">
+  <div class="tape"></div>
+
+  <div class="top-bar">
+    <div class="site-url">techietable<span>.com/tutoring</span></div>
+    <div class="top-tag">Advanced Full-Stack Tutoring</div>
+  </div>
+
+  <div class="headline">Your First<br>Hour Is<br>Free.</div>
+
+  <div class="headline-sub">Any Level Full-Stack Development</div>
+
+  <div class="free-strip">First session? <span>On us.</span> No strings.</div>
+  <div class="rates-note">After the first hour — current rates at techietable.com/tutoring</div>
+
+  <div class="rule"></div>
+
+  <ul class="bullets">
+    <li><span class="dot">✦</span> Mentorship</li>
+    <li><span class="dot">✦</span> All levels welcome</li>
+    <li><span class="dot">✦</span> Real code. Real frameworks. Not textbook fluff.</li>
+    <li><span class="dot">✦</span> One-on-one, flexible scheduling</li>
+    <li><span class="dot">✦</span> Real-world dev experience opportunities available</li>
+  </ul>
+
+  <div class="tech-row">
+    <span>Spring Boot</span> · <span>ASP.NET Core Web API</span> · <span>Node/Express</span> · <span>Angular</span> · <span>Blazor/MAUI</span> · <span>React</span> <span>HTML/CSS/JS</span> · <span>Java</span> · <span>.NET/C#</span> · <span>TypeScript</span> · <span>JavaScript</span> · <span>Git</span> · <span>Docker</span> · <span>Ansible</span>
+  </div>
+
+  <div class="qr-row">
+    <div class="qr-block">
+      <div id="qr-site"></div>
+      <div class="qr-info">
+        <div class="qr-title">Book a Session</div>
+        <div class="qr-handle">techietable.com/tutoring</div>
+        <div class="qr-note">Scan to visit the tutoring page<br>and get started</div>
+      </div>
+    </div>
+    <div class="qr-block">
+      <div id="qr-matrix"></div>
+      <div class="qr-info">
+        <div class="qr-title">Message Directly</div>
+        <div class="qr-handle">@calvin:techietable.com</div>
+        <div class="qr-note">Scan to reach out<br>on Matrix</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tagline">
+    <div class="tagline-text">Sit at <em>the table.</em></div>
+    <div class="tagline-url">techietable.com/tutoring</div>
+  </div>
+</div>
+
+<script>
+new QRCode(document.getElementById('qr-site'), {
+  text: 'https://techietable.com/tutoring',
+  width: 110,
+  height: 110,
+  colorDark: '#1a1a1a',
+  colorLight: '#f5f0e4',
+  correctLevel: QRCode.CorrectLevel.M
+});
+
+new QRCode(document.getElementById('qr-matrix'), {
+  text: 'https://matrix.to/#/@calvin:techietable.com',
+  width: 110,
+  height: 110,
+  colorDark: '#1a1a1a',
+  colorLight: '#f5f0e4',
+  correctLevel: QRCode.CorrectLevel.M
+});
+</script>
+</body>
+</html>

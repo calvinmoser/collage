@@ -28,8 +28,8 @@ public class MatrixService {
     private final RestClient restClient = RestClient.create();
 
     public void sendContactMessage(ContactRequest req) {
-        log.info("Contact request — name=\"{}\" email=\"{}\" wantHandle={} handle=\"{}\"",
-                req.name(), req.email(), req.wantHandle(), req.handle());
+        log.info("Contact request — name=\"{}\" email=\"{}\" message=\"{}\" wantHandle={} handle=\"{}\"",
+                req.name(), req.email(), req.message(), req.wantHandle(), req.handle());
 
         if (accessToken.isBlank() || roomId.isBlank()) {
             throw new IllegalStateException("Matrix credentials not configured");
@@ -50,6 +50,9 @@ public class MatrixService {
         StringBuilder sb = new StringBuilder("New contact request\n");
         sb.append("Name: ").append(req.name()).append("\n");
         sb.append("Email: ").append(req.email()).append("\n");
+        if (req.message() != null && !req.message().isBlank()) {
+            sb.append("Message: ").append(req.message()).append("\n");
+        }
         if (req.wantHandle() && req.handle() != null && !req.handle().isBlank()) {
             sb.append("Handle: @").append(req.handle()).append(":techietable.com");
         } else {

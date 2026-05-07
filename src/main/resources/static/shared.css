@@ -52,3 +52,22 @@
   transition: background 0.12s;
 }
 .nav-home:hover { background: rgba(255,159,28,0.2); }
+
+.nav-contact {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  z-index: 200;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: white;
+  background: rgba(0,0,0,0.65);
+  padding: 7px 14px;
+  text-decoration: none;
+  border-left: 2px solid var(--color-orange);
+  transition: background 0.12s;
+}
+.nav-contact:hover { background: rgba(255,159,28,0.2); }

@@ -179,9 +179,31 @@ body {
 }
 
 .field input[type="text"]::placeholder,
-.field input[type="email"]::placeholder {
+.field input[type="email"]::placeholder,
+.field textarea::placeholder {
   color: rgba(255,255,255,0.2);
   font-style: italic;
+}
+
+.field textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-bottom: 2px solid rgba(255,159,28,0.5);
+  color: white;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  outline: none;
+  resize: vertical;
+  min-height: 90px;
+  transition: border-color 0.15s, background 0.15s;
+  -webkit-appearance: none;
+}
+.field textarea:focus {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.25);
+  border-bottom-color: var(--color-orange);
 }
 
 /* ── CHECKBOX ROW ── */
@@ -388,8 +410,13 @@ body {
         <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" tabindex="2">
       </div>
 
+      <div class="field">
+        <label for="message">Message <span style="color:rgba(255,255,255,0.35); font-size:0.6rem;">OPTIONAL</span></label>
+        <textarea id="message" name="message" placeholder="What are you working on? What do you need help with?" tabindex="3" rows="3"></textarea>
+      </div>
+
       <div class="check-row" onclick="toggleHandle()">
-        <input type="checkbox" id="want-handle" name="want_handle" tabindex="3" onchange="toggleHandle()">
+        <input type="checkbox" id="want-handle" name="want_handle" tabindex="4" onchange="toggleHandle()">
         <div class="check-label">
           Create a <span>@handle:techietable.com</span> Matrix account for me
         </div>
@@ -401,14 +428,14 @@ body {
         </label>
         <div class="handle-wrap">
           <span class="handle-prefix">@</span>
-          <input type="text" id="handle" name="handle" placeholder="yourhandle" tabindex="4"
+          <input type="text" id="handle" name="handle" placeholder="yourhandle" tabindex="5"
             pattern="[a-z0-9._\-]+" title="Lowercase letters, numbers, dots, dashes, underscores only">
           <span class="handle-suffix">:techietable.com</span>
         </div>
       </div>
 
       <div class="submit-row">
-        <button type="button" class="btn-submit" tabindex="5" onclick="handleSubmit()">Send It</button>
+        <button type="button" class="btn-submit" tabindex="6" onclick="handleSubmit()">Send It</button>
         <div class="submit-note">
           We'll reach out via email.<br>
           Matrix handle requests reviewed manually.
@@ -422,7 +449,7 @@ body {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 new QRCode(document.getElementById('qr-contact'), {
-  text: 'https://matrix.to/#/@placeholder:matrix.org',
+  text: 'https://matrix.to/#/@calvin:techietable.com',
   width: 96,
   height: 96,
   colorDark: '#ffffff',
@@ -468,6 +495,7 @@ async function handleSubmit() {
       body: JSON.stringify({
         name:       name.value.trim(),
         email:      email.value.trim(),
+        message:    document.getElementById('message').value.trim(),
         wantHandle: cb.checked,
         handle:     handle.value.trim()
       })

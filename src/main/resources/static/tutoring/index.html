@@ -187,6 +187,20 @@ body {
 }
 .tag.l:hover { background: var(--color-gold); color: #111; }
 
+.stack-nudge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.75);
+  background: rgba(0,0,0,0.6);
+  display: inline-block;
+  padding: 6px 12px;
+  margin-top: 0.75rem;
+}
+.stack-nudge a { color: var(--color-orange); text-decoration: none; }
+.stack-nudge a:hover { text-decoration: underline; }
+
 /* ── PERK TAGS ── */
 .perks {
   display: flex;
@@ -314,6 +328,7 @@ body {
 <body>
 
 <a href="/" class="nav-home">← TechieTable</a>
+<a href="/contact" class="nav-contact">Contact →</a>
 <div class="bg"></div>
 <div class="bg-glow"></div>
 
@@ -322,7 +337,7 @@ body {
   <!-- HERO -->
   <div class="hero">
     <div class="label-main">Sit at the Table</div>
-    <div class="label-sub">Advanced CS Tutoring</div>
+    <div class="label-sub">Advanced Full-Stack Development</div>
     <div class="label-mono">One-on-one &nbsp;·&nbsp; All levels: undergrad → post-grad &nbsp;·&nbsp; Real frameworks</div>
 
     <div class="price-float">
@@ -334,19 +349,30 @@ body {
 
   <!-- SPECIALTIES -->
   <div class="s-left">
-    <div class="sec-head">Specialties</div>
+    <div class="sec-head">Full-Stack Development</div>
     <div class="tags">
       <span class="tag">Spring Boot</span>
-      <span class="tag">Docker</span>
-      <span class="tag">Ansible</span>
+      <span class="tag">ASP.NET Core Web API</span>
+      <span class="tag">Node/Express</span>
+    </div>
+    <div class="tags" style="margin-top:6px">
       <span class="tag">Angular</span>
-      <span class="tag">Blazor</span>
-      <span class="tag">Blazor MAUI</span>
+      <span class="tag">Blazor / MAUI</span>
+      <span class="tag">React</span>
+      <span class="tag">HTML/CSS/JS</span>
+    </div>
+    <div class="tags" style="margin-top:6px">
       <span class="tag l">Java</span>
       <span class="tag l">.NET / C#</span>
       <span class="tag l">TypeScript</span>
       <span class="tag l">JavaScript</span>
     </div>
+    <div class="tags" style="margin-top:6px">
+      <span class="tag">Git</span>
+      <span class="tag">Docker</span>
+      <span class="tag">Ansible</span>
+    </div>
+    <p class="stack-nudge">Don't see your stack? <a href="/contact">Reach out anyway →</a></p>
   </div>
 
   <!-- TUTORING -->
@@ -356,7 +382,7 @@ body {
       Live walkthroughs of your actual coursework. Real debugging, not textbook
       examples. Architecture discussions, code review, interview prep —
       built around what you're working on right now. Flexible scheduling
-      around classes and finals. Zoom, Meet, or Discord screen share.
+      around classes and finals. Zoom, Meet, Discord, or Matrix.
     </p>
   </div>
 
@@ -383,7 +409,7 @@ body {
     <div class="cta-text">Sit at<br><span>the table.</span></div>
     <div>
       <div class="qr-block">
-        <canvas id="qr" width="96" height="96"></canvas>
+        <div id="qr"></div>
         <div class="qr-label">
           <span>Message on Matrix</span>
           Scan to reach out<br>and book your<br>free first hour
@@ -399,7 +425,7 @@ body {
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-  var matrixLink = 'https://matrix.to/#/@placeholder:matrix.org';
+  var matrixLink = 'https://matrix.to/#/@calvin:techietable.com';
   new QRCode(document.getElementById('qr'), {
     text: matrixLink,
     width: 96,
