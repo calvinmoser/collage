@@ -322,7 +322,7 @@ public class CollageService {
         BufferedImage canvas = new BufferedImage(W, H, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = canvas.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,   RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,  RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,  RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         g.setRenderingHint(RenderingHints.KEY_RENDERING,      RenderingHints.VALUE_RENDER_QUALITY);
 
         for (Scrap s : scraps) renderScrap(g, s);
@@ -373,7 +373,13 @@ public class CollageService {
             sg.drawImage(mask, 0, 0, null);
             sg.dispose();
 
-            g.drawImage(scrapBuf, (int) (-w / 2), (int) (-h / 2), null);
+            // Convert to pre-multiplied so bilinear interpolation during rotation
+            // doesn't blend ghost RGB values from DstIn-zeroed transparent pixels.
+            BufferedImage premult = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_ARGB_PRE);
+            Graphics2D pc = premult.createGraphics();
+            pc.drawImage(scrapBuf, 0, 0, null);
+            pc.dispose();
+            g.drawImage(premult, (int) (-w / 2), (int) (-h / 2), null);
         }
         g.setTransform(saved);
     }
