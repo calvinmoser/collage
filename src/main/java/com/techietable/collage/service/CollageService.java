@@ -348,20 +348,33 @@ public class CollageService {
             g.fill(buildPath(fringe, w, h, -w / 2, -h / 2));
         }
 
-        // 3. Clipped fragment image
-        Path2D.Double clip = buildPath(s.getClipPoints(), w, h, -w / 2, -h / 2);
-        Shape savedClip = g.getClip();
-        g.clip(clip);
-
+        // 3. Clipped fragment image — off-screen buffer + DstIn mask for anti-aliased edges
+        // (g.clip() ignores VALUE_ANTIALIAS_ON; fill() does not)
         int icx = (int) s.getCropX(), icy = (int) s.getCropY();
         int iw  = Math.min((int) w, s.getFragment().getWidth()  - icx);
         int ih  = Math.min((int) h, s.getFragment().getHeight() - icy);
         if (iw > 0 && ih > 0) {
-            BufferedImage crop = s.getFragment().getSubimage(icx, icy, iw, ih);
-            g.drawImage(crop, (int) (-w / 2), (int) (-h / 2), null);
-        }
+            int bw = (int) w, bh = (int) h;
 
-        g.setClip(savedClip);
+            BufferedImage scrapBuf = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D sg = scrapBuf.createGraphics();
+            sg.setRenderingHint(RenderingHints.KEY_ANTIALIASING,  RenderingHints.VALUE_ANTIALIAS_ON);
+            sg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            sg.drawImage(s.getFragment().getSubimage(icx, icy, iw, ih), 0, 0, null);
+
+            BufferedImage mask = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D mg = mask.createGraphics();
+            mg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            mg.setColor(Color.WHITE);
+            mg.fill(buildPath(s.getClipPoints(), w, h, 0, 0));
+            mg.dispose();
+
+            sg.setComposite(AlphaComposite.DstIn);
+            sg.drawImage(mask, 0, 0, null);
+            sg.dispose();
+
+            g.drawImage(scrapBuf, (int) (-w / 2), (int) (-h / 2), null);
+        }
         g.setTransform(saved);
     }
 

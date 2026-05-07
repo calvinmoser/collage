@@ -16,8 +16,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class BackgroundCache {
 
     private static final Logger log = LoggerFactory.getLogger(BackgroundCache.class);
-    private static final int W = 1920;
-    private static final int H = 1080;
+    private static final int W = 2024;
+    private static final int H = 2024;
 
     @Autowired
     private CollageService collageService;
