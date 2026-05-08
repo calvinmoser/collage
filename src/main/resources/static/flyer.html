@@ -251,20 +251,27 @@ html, body {
   color: #888;
 }
 
-/* ── PRINT ── */
-@media print {
+/* ── MOBILE ── */
+@media screen and (max-width: 900px) {
   html, body {
-    background: none;
     padding: 0;
-    display: block;
-  }
-  .flyer {
-    width: 100%;
-    min-height: 100vh;
-    box-shadow: none;
-    padding: 0.65in 0.7in 0.6in;
+    justify-content: flex-start;
+    background: #c8bfb0;
   }
   .tape { display: none; }
+}
+
+/* ── PRINT ── */
+@media print {
+  @page { margin: 0; size: letter portrait; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body {
+    background: none;
+    padding: .2in 0 0;
+    display: flex;
+    justify-content: center;
+  }
+  .flyer { padding: 0.3in 0.75in 0.25in; }
 }
 </style>
 </head>
@@ -351,6 +358,13 @@ function fitFlyer() {
 }
 fitFlyer();
 window.addEventListener('resize', fitFlyer);
+
+window.addEventListener('beforeprint', function() {
+  document.querySelector('.flyer').style.zoom = '0.83';
+});
+window.addEventListener('afterprint', function() {
+  document.querySelector('.flyer').style.zoom = '';
+});
 </script>
 </body>
 </html>
