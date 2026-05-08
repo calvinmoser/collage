@@ -77,6 +77,21 @@ body {
   padding: 6px 16px;
 }
 
+.label-cred {
+  position: absolute;
+  top: 270px;
+  left: 6vw;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(0.55rem, 1.1vw, 0.7rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.85);
+  background: rgba(0,0,0,0.5);
+  padding: 5px 14px;
+  border-left: 3px solid var(--color-orange);
+}
+
 /* ── PRICE — floated upper right ── */
 .price-float {
   position: absolute;
@@ -122,6 +137,20 @@ body {
   padding: 4px 10px;
   display: inline-block;
   margin-top: 4px;
+}
+
+.price-cred {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.45);
+  padding: 3px 10px;
+  display: inline-block;
+  margin-top: 3px;
+  font-style: italic;
 }
 
 /* ── SECTION HEADERS ── */
@@ -354,6 +383,7 @@ a.qr-link:hover { opacity: 0.82; }
     <div class="label-main">Sit at the Table</div>
     <div class="label-sub">Advanced Full-Stack Development</div>
     <div class="label-mono">One-on-one &nbsp;·&nbsp; All levels &nbsp;·&nbsp; Real frameworks &nbsp;·&nbsp; Real experience</div>
+    <div class="label-cred">5 years training full-stack bootcamp cohorts</div>
 
     <div class="price-float">
       <div class="price-free">First hour free</div>
