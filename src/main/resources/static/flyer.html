@@ -342,5 +342,15 @@ new QRCode(document.getElementById('qr-matrix'), {
   correctLevel: QRCode.CorrectLevel.M
 });
 </script>
+<script>
+function fitFlyer() {
+  const flyer = document.querySelector('.flyer');
+  const available = document.documentElement.clientWidth - 16;
+  const natural = 816; // 8.5in * 96px/in
+  flyer.style.zoom = available < natural ? available / natural : '';
+}
+fitFlyer();
+window.addEventListener('resize', fitFlyer);
+</script>
 </body>
 </html>
