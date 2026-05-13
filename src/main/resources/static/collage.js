@@ -1,4 +1,4 @@
-// Iteration 36
+// Iteration 44
 'use strict';
 
 // ── Configuration ─────────────────────────────────────────────────────────────
@@ -288,10 +288,10 @@ const SITE_CONFIG = {
 };
 
 const SITE_IMAGES = [
-  { src: '../images/sites/element.png',    href: 'https://element.techietable.com',    label: 'ELEMENT'    },
-  { src: '../images/sites/fivethings.png', href: 'https://fivethings.techietable.com', label: 'FIVE THINGS' },
-  { src: '../images/sites/infontity.png',  href: 'https://infontityscroll.com',         label: 'INFONTITY'  },
-  { src: '../images/sites/skyisopen.png',  href: 'https://skyisopen.techietable.com',  label: 'SKYISOPEN'  },
+  { src: '../images/sites/element.webp',    href: 'https://element.techietable.com',    label: 'ELEMENT'    },
+  { src: '../images/sites/fivethings.webp', href: 'https://fivethings.techietable.com', label: 'FIVE THINGS' },
+  { src: '../images/sites/infontity.webp',  href: 'https://infontityscroll.com',         label: 'INFONTITY'  },
+  { src: '../images/sites/skyisopen.webp',  href: 'https://skyisopen.techietable.com',  label: 'SKYISOPEN'  },
 ];
 
 const LABEL_FONTS  = ['Impact', 'Arial Black', 'Georgia', '"Comic Sans MS"', '"Courier New"'];
@@ -390,16 +390,21 @@ function renderSiteScrap(container, src, cx, cy, w, h, rot, clipPath, fringePoly
   const boostDist = shadowBlur * 0.7;
   const blackShadow = `drop-shadow(${shadowX}px ${shadowY}px ${shadowBlur}px rgba(0,0,0,${alpha}))` +
                       ` drop-shadow(${(shadowX * 0.5).toFixed(1)}px ${(shadowY * 0.5).toFixed(1)}px ${boostDist.toFixed(1)}px rgba(0,0,0,0.30))`;
-  // Airbrush glow: separate fixed-z element so it stays in place on click-to-front
+  // Airbrush glow: separate fixed-z element so it stays in place on click-to-front.
+  // Applied only after the site image loads so slow-connection users don't see a glowing empty box.
+  let glowWrapper = null;
   if (labelColor) {
-    const glowFilter = [
+    const glowFast = [
       `drop-shadow(0 0 4px ${hexToRgba(labelColor, 1.00)})`,
       `drop-shadow(0 0 10px ${hexToRgba(labelColor, 0.90)})`,
       `drop-shadow(0 0 22px ${hexToRgba(labelColor, 0.60)})`,
+    ].join(' ');
+    const glowFull = glowFast + [
+      ``,
       `drop-shadow(0 0 40px ${hexToRgba(labelColor, 0.22)})`,
       `drop-shadow(0 0 65px ${hexToRgba(labelColor, 0.08)})`,
     ].join(' ');
-    const glowWrapper = document.createElement('div');
+    glowWrapper = document.createElement('div');
     glowWrapper.style.cssText = [
       `position:absolute`,
       `left:${(cx - w / 2).toFixed(1)}px`,
@@ -409,9 +414,11 @@ function renderSiteScrap(container, src, cx, cy, w, h, rot, clipPath, fringePoly
       `transform:rotate(${rot.toFixed(1)}deg)`,
       `transform-origin:center center`,
       `z-index:${SITE_CONFIG.baseZ - 2}`,
-      `filter:${glowFilter}`,
+      `filter:none`,
       `pointer-events:none`,
     ].join(';');
+    glowWrapper.dataset.glowFast = glowFast;
+    glowWrapper.dataset.glowFull = glowFull;
     const glowInner = document.createElement('div');
     glowInner.style.cssText = `width:100%;height:100%;clip-path:${clipPath};background:${labelColor}`;
     glowWrapper.appendChild(glowInner);
@@ -471,10 +478,27 @@ function renderSiteScrap(container, src, cx, cy, w, h, rot, clipPath, fringePoly
   container.appendChild(overlay);
   allEls.push(overlay);
 
-  return allEls;
+  return { allEls, glowWrapper, img };
 }
 
 async function buildSiteLayer(container, W, H) {
+  // All site scraps reveal together once every image has settled (load or error)
+  let settledCount = 0;
+  const pendingReveal = [];
+  const onImageSettled = () => {
+    if (++settledCount < SITE_IMAGES.length) return;
+    hideSpinner();
+    for (const { groupEls, glowWrapper } of pendingReveal) {
+      groupEls.forEach(el => { el.style.visibility = 'visible'; });
+      if (glowWrapper) {
+        glowWrapper.style.filter = glowWrapper.dataset.glowFast;
+        'requestIdleCallback' in window
+          ? requestIdleCallback(() => { glowWrapper.style.filter = glowWrapper.dataset.glowFull; }, { timeout: 2000 })
+          : setTimeout(() => { glowWrapper.style.filter = glowWrapper.dataset.glowFull; }, 500);
+      }
+    }
+  };
+
   const lightAngle = rnd(25, 65) * Math.PI / 180;
   const shadowDist = rnd(5, 12);
   const shadowX    = +(Math.cos(lightAngle) * shadowDist).toFixed(1);
@@ -571,8 +595,15 @@ async function buildSiteLayer(container, W, H) {
     const labelColor = labelColorPool[i];
     const innerAngle = rnd(-10, 10);
     const { clipPath, fringePolygons } = generateClipPath(chooseRippedEdges(), innerAngle);
-    const allEls  = renderSiteScrap(container, src, best.cx, best.cy, w, h, rot, clipPath, fringePolygons, zIndex, shadowX, shadowY, shadowBlur, labelColor);
+    const { allEls, glowWrapper, img } = renderSiteScrap(container, src, best.cx, best.cy, w, h, rot, clipPath, fringePolygons, zIndex, shadowX, shadowY, shadowBlur, labelColor);
     const labelEl = renderLabel(container, label, best.cx, best.cy, w, h, rot, zIndex + 1, labelColor);
+
+    // Hide everything until the image loads
+    const groupEls = [...allEls, labelEl, ...(glowWrapper ? [glowWrapper] : [])];
+    groupEls.forEach(el => { el.style.visibility = 'hidden'; });
+    pendingReveal.push({ groupEls, glowWrapper });
+    img.addEventListener('load',  onImageSettled, { once: true });
+    img.addEventListener('error', onImageSettled, { once: true });
 
     siteGroups.push({ allEls, labelEl, href });
   }
@@ -647,17 +678,36 @@ async function buildCollage() {
   const W = window.innerWidth;
   const H = window.innerHeight;
 
+  const t0 = performance.now();
+
   const spinnerSrc = SITE_IMAGES[Math.floor(Math.random() * SITE_IMAGES.length)].src;
   showSpinner(spinnerSrc);
   await new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
 
-  const [bgBlob] = await Promise.all([
-    fetch(`/api/background?w=${W}&h=${H}`).then(r => r.blob()),
-    Promise.all(SITE_IMAGES.map(({ src }) => new Promise(r => {
-      const img = new Image(); img.onload = img.onerror = r; img.src = src;
-    }))),
-  ]);
-  const bgUrl = URL.createObjectURL(bgBlob);
+  // Phase 1: kick off site image fetches immediately, then fetch bg; show bg as soon as it arrives
+  const t1 = performance.now();
+  const sitePreloadStart = performance.now();
+  SITE_IMAGES.forEach(({ src }) => { const img = new Image(); img.src = src; });
+  const bgBlob = await fetch(`/api/background?w=${W}&h=${H}`).then(r => r.blob());
+  console.log(`[perf] bg fetch: ${(performance.now() - t1).toFixed(0)}ms  (${bgBlob.size} bytes)`);
+
+  container.innerHTML = '';
+  container.style.height = `${H}px`;
+  const bgOverlay = document.createElement('div');
+  bgOverlay.style.cssText = [
+    'position:absolute', 'inset:0',
+    `background-image:url(${URL.createObjectURL(bgBlob)})`,
+    'background-size:cover',
+    'background-position:center',
+    'pointer-events:none',
+  ].join(';');
+  container.appendChild(bgOverlay);
+  const spinnerEl = document.getElementById('loading-spinner');
+  if (spinnerEl) { spinnerEl.style.transition = 'background 0.4s'; spinnerEl.style.background = 'transparent'; }
+  console.log(`[perf] bg visible: ${(performance.now() - t0).toFixed(0)}ms`);
+
+  // Phase 2: build site layer immediately (site images load from in-flight fetches as they arrive)
+  console.log(`[perf] site image preload: ${(performance.now() - sitePreloadStart).toFixed(0)}ms elapsed so far`);
 
   const effectiveFgW = Math.min(FG_W, W);
   const fgScale = Math.min(1, W / effectiveFgW);
@@ -674,28 +724,16 @@ async function buildCollage() {
     `overflow:visible`,
   ].join(';');
 
+  const t3 = performance.now();
   await buildSiteLayer(siteWrapper, effectiveFgW, H);
-
-  container.innerHTML = '';
-  container.style.height = `${H}px`;
-  // medium class (bg-corkboard etc.) stays on container; collage PNG overlays it
-  const bgOverlay = document.createElement('div');
-  bgOverlay.style.cssText = [
-    'position:absolute', 'inset:0',
-    `background-image:url(${bgUrl})`,
-    'background-size:cover',
-    'background-position:center',
-    'pointer-events:none',
-  ].join(';');
-  container.appendChild(bgOverlay);
+  console.log(`[perf] buildSiteLayer: ${(performance.now() - t3).toFixed(0)}ms`);
   container.appendChild(siteWrapper);
 
-  const siteImgs = [...container.querySelectorAll('.site-scrap img')];
-  await Promise.all(siteImgs.map(img =>
-    img.complete ? Promise.resolve() : new Promise(r => { img.onload = img.onerror = r; })
-  ));
+  const tBeforeRaf = performance.now();
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-  hideSpinner();
+  console.log(`[perf] double-rAF: ${(performance.now() - tBeforeRaf).toFixed(0)}ms`);
+  console.log(`[perf] total buildCollage: ${(performance.now() - t0).toFixed(0)}ms  (viewport: ${W}x${H})`);
+
 }
 
 // ── Events ────────────────────────────────────────────────────────────────────

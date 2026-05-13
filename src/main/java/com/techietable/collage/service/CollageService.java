@@ -4,14 +4,12 @@ import com.techietable.collage.model.Scrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -41,14 +39,14 @@ public class CollageService {
 
     // ── Public API ───────────────────────────────────────────────────────────────
 
-    public byte[] generateBackground(int W, int H) throws IOException {
+    public BufferedImage generateBackground(int W, int H) throws IOException {
         List<BufferedImage> pool = selectFragments();
         List<Scrap> scraps = createScraps(pool, W, H);
         assignShadows(scraps);
         placeScraps(scraps, W, H);
         BufferedImage canvas = render(scraps, W, H);
         applyFilters(canvas);
-        return encode(canvas);
+        return canvas;
     }
 
     // ── Fragment selection ───────────────────────────────────────────────────────
@@ -461,14 +459,6 @@ public class CollageService {
     }
 
     private static int clamp(int v) { return Math.max(0, Math.min(255, v)); }
-
-    // ── Encoding ─────────────────────────────────────────────────────────────────
-
-    private byte[] encode(BufferedImage img) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(img, "png", baos);
-        return baos.toByteArray();
-    }
 
     // ── Random helpers ───────────────────────────────────────────────────────────
 

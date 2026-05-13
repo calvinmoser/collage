@@ -10,15 +10,16 @@ The overall idea is that this is a landing page for access to other websites and
   - Site images will be clustered (mostly) in content area
   - Better depth shadowing with stacked stickers
 - Somehow we will want to make the site images stand out more than the collage images
-  - Each site image has a colored airbrush glow that radiates uniformly from all edges                                                                                                  
+  - Each site image has a colored airbrush glow that radiates uniformly from all edges
     - Glow color matches the letter-sticker label color for that image
-    - Implemented as stacked CSS `drop-shadow` filters on a wrapper element (parent of                                                                                                    
-      the clip-path element), so the glow correctly escapes the irregular clip-path shape                                                                                                 
-    - 5 layers: 4px→10px→22px→40px→65px blur, opacity 0.95→0.80→0.55→0.30→0.15                                                                                                            
-    - Site scraps also carry a stronger double black drop-shadow (alpha 0.55–0.75) to                                                                                                     
-      appear more lifted than background scraps                                                                                                                                           
-    - A subtle white linear-gradient overlay (135°, 22%→transparent at 55%) on the                                                                                                        
-      upper-left edge simulates a light catch (reverse shadow)             
+    - Implemented as stacked CSS `drop-shadow` filters on a wrapper element (parent of
+      the clip-path element), so the glow correctly escapes the irregular clip-path shape
+    - 5 layers: 4px→10px→22px→40px→65px blur, opacity 0.95→0.80→0.55→0.30→0.15
+    - Glow is applied only after all site images have finished loading, when scraps are revealed
+    - Site scraps also carry a stronger double black drop-shadow (alpha 0.55–0.75) to
+      appear more lifted than background scraps
+    - A subtle white linear-gradient overlay (135°, 22%→transparent at 55%) on the
+      upper-left edge simulates a light catch (reverse shadow)
   -  Future possibilities
     1) Transparency on content div (1280px wide placeholder for site images)
     2) Tiny core that matches curve of image for cuts
@@ -47,10 +48,10 @@ The overall idea is that this is a landing page for access to other websites and
     - Future possibility: [image](https://m.media-amazon.com/images/I/7119GIXtvOL._AC_SL1485_.jpg)
 
 ## Site Links
-ELEMENT element.techietable.com element.png
-FIVE THINGS fivethings.techietable.com fivethings.png
-INFONTITY infontityscroll.com infontity.png
-SKYISOPEN skyisopen.techietable.com skyisopen.png
+ELEMENT element.techietable.com element.webp
+FIVE THINGS fivethings.techietable.com fivethings.webp
+INFONTITY infontityscroll.com infontity.webp
+SKYISOPEN skyisopen.techietable.com skyisopen.webp
 
 
 ## Images
@@ -94,11 +95,16 @@ SKYISOPEN skyisopen.techietable.com skyisopen.png
   - Generates the background collage server-side and returns it as a single WebP image
   - Frontend fetches `GET /api/background?w=<vw>&h=<vh>` and sets it as a CSS background-image
   - All bg scrap logic lives here: fragment selection, boring-crop detection, clip-path masking, placement, shadowing
-  - New composition generated per request (randomness preserved server-side)
-  - Fragment PNGs (~14MB total) are never sent to the browser; only the composed WebP (~300–800KB) is
+  - `BackgroundCache` pre-generates a 2024×2024 image at startup and serves it immediately on request, queuing the next generation in the background (serve-then-regenerate pattern)
+  - During generation the cache also pre-encodes two WebP byte arrays: mobile (1024×1024) and full (2024×2024), both at quality 0.75 lossy
+  - Requests with `max(w,h) ≤ 1024` receive the mobile bytes; larger viewports receive the full bytes — zero encoding work on the request thread
+  - Encoded as WebP (via `org.sejda.imageio:webp-imageio`) rather than PNG for significantly smaller download size
+  - Fragment PNGs (~14MB total) are never sent to the browser; only the composed WebP is
   - Backend is shared infrastructure — may be reused for other collage-based applications
 - Frontend retains full responsibility for the interactive foreground layer:
   - Site image scraps with glows, labels, click-to-front z-ordering
+  - Site image fetches begin in parallel with the bg fetch; site layer is built immediately after bg arrives but scraps stay hidden until all images settle
+  - Loading is a two-phase reveal: bg arrival fades the spinner overlay to transparent (bg becomes visible, spinner scrap keeps spinning); all scraps reveal together and spinner is removed only after the last site image settles (load or error)
   - Background type dropdown (passes selection to backend as a query param)
   - Overlap % dropdown
 - Must work on desktop and mobile
